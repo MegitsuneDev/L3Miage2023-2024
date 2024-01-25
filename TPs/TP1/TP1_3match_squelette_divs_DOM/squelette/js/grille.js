@@ -1,108 +1,130 @@
-import Cookie from "./cookie.js";
 import { create2DArray } from "./utils.js";
+import Cookie from "./cookie.js";
 
-/* Classe principale du jeu, c'est une grille de cookies. Le jeu se joue comme
-Candy Crush Saga etc... c'est un match-3 game... */
 export default class Grille {
-  /**
-   * Constructeur de la grille
-   * @param {number} l nombre de lignes
-   * @param {number} c nombre de colonnes
-   */
-  constructor(l, c) {
-    this.c = c;
-    this.l = l;
+	/**
+	 * @param {number} l nombre de lignes
+	 * @param {number} c nombre de colonnes
+	 */
+	constructor(l, c) {
+		this.c = c;
+		this.l = l;
 
-    this.tabcookies = this.remplirTableauDeCookies(6)
-  }
+		this.cookiesSelectionnees = [];
+		this.tabcookies = this.remplirTableauDeCookies(6);
+	}
 
-  /**
-   * parcours la liste des divs de la grille et affiche les images des cookies
-   * correspondant à chaque case. Au passage, à chaque image on va ajouter des
-   * écouteurs de click et de drag'n'drop pour pouvoir interagir avec elles
-   * et implémenter la logique du jeu.
-   */
-  showCookies() {
-    let caseDivs = document.querySelectorAll("#grille div");
+	showCookies() {
 
-    caseDivs.forEach((div, index) => {
-      // on calcule la ligne et la colonne de la case
-      // index est le numéro de la case dans la grille
-      // on sait que chaque ligne contient this.c colonnes
-      // er this.l lignes
-      // on peut en déduire la ligne et la colonne
-      // par exemple si on a 9 cases par ligne et qu'on 
-      // est à l'index 4
-      // on est sur la ligne 0 (car 4/9 = 0) et 
-      // la colonne 4 (car 4%9 = 4)
-      let ligne = Math.floor(index / this.l);
-      let colonne = index % this.c; 
+		const grilleDiv = document.querySelector("#grille");
 
-      console.log("On remplit le div index=" + index + " l=" + ligne + " col=" + colonne);
+		for (let l = 0; l < this.l; l++) {
+			for (let c = 0; c < this.c; c++) {
+				const div = document.createElement("div");
+				grilleDiv.appendChild(div);
+			}
+		}
 
-      // on récupère le cookie correspondant à cette case
-      let cookie = this.tabcookies[ligne][colonne];
-      // on récupère l'image correspondante
-      let img = cookie.htmlImage;
+		const grilleDivs = grilleDiv.querySelectorAll("div");
 
-      img.onclick = (event) => {
-        console.log("On a cliqué sur la ligne " + ligne + " et la colonne " + colonne);
-        //let cookieCliquee = this.getCookieFromLC(ligne, colonne);
-        console.log("Le cookie cliqué est de type " + cookie.type);
-        // highlight + changer classe CSS
-        cookie.selectionnee();
+		grilleDivs.forEach((div, index) => {
 
-        // A FAIRE : tester combien de cookies sont sélectionnées
-        // si 0 on ajoute le cookie cliqué au tableau
-        // si 1 on ajoute le cookie cliqué au tableau
-        // et on essaie de swapper
-      }
+			const ligne = Math.floor(index / this.l);
+			const colonne = index % this.c;
 
-      // A FAIRE : ecouteur de drag'n'drop
+			console.log("On remplit le div index=" + index + " l=" + ligne + " col=" + colonne);
 
-      // on affiche l'image dans le div pour la faire apparaitre à l'écran.
-      div.appendChild(img);
-    });
-  }
+			const cookie = this.tabcookies[ligne][colonne];
+			const img = cookie.htmlImage;
 
-  // inutile ?
-  getCookieFromLC(ligne, colonne) {
-    return this.tabcookies[ligne][colonne];
-  }
-  
-  /**
-   * Initialisation du niveau de départ. Le paramètre est le nombre de cookies différents
-   * dans la grille. 4 types (4 couleurs) = facile de trouver des possibilités de faire
-   * des groupes de 3. 5 = niveau moyen, 6 = niveau difficile
-   *
-   * Améliorations : 1) s'assurer que dans la grille générée il n'y a pas déjà de groupes
-   * de trois. 2) S'assurer qu'il y a au moins 1 possibilité de faire un groupe de 3 sinon
-   * on a perdu d'entrée. 3) réfléchir à des stratégies pour générer des niveaux plus ou moins
-   * difficiles.
-   *
-   * On verra plus tard pour les améliorations...
-   */
-  remplirTableauDeCookies(nbDeCookiesDifferents) {
-    // créer un tableau vide de 9 cases pour une ligne
-    // en JavaScript on ne sait pas créer de matrices
-    // d'un coup. Pas de new tab[3][4] par exemple.
-    // Il faut créer un tableau vide et ensuite remplir
-    // chaque case avec un autre tableau vide
-    // Faites ctrl-click sur la fonction create2DArray
-    // pour voir comment elle fonctionne
-    let tab = create2DArray(9);
+			img.onclick = (event) => {
+				console.log("On a cliqué sur la ligne " + ligne + " et la colonne " + colonne);
+				console.log("Le cookie cliqué est de type " + cookie.type);
 
-    // remplir
-    for(let l = 0; l < this.l; l++) {
-      for(let c =0; c < this.c; c++) {
+				if (this.cookiesSelectionnees.length === 0) {
+					cookie.selectionnee();
+					this.cookiesSelectionnees.push(cookie);
+				} else if (this.cookiesSelectionnees.length === 1) {
+					cookie.selectionnee();
+					this.cookiesSelectionnees.push(cookie);
+					Cookie.swapCookies(this.cookiesSelectionnees[0], this.cookiesSelectionnees[1]);
+					this.cookiesSelectionnees = [];
+				} else {
+					console.log("Deux cookies sont déjà sélectionnées...");
+				}
+			};
 
-        // on génère un nombre aléatoire entre 0 et nbDeCookiesDifferents-1
-        const type = Math.floor(Math.random()*nbDeCookiesDifferents);
-        //console.log(type)
-        tab[l][c] = new Cookie(type, l, c);
-      }
-    }
+			img.ondragstart = (event) => {
+				let cookieDragguee = this.getCookieFromImage(event.target);
+				cookieDragguee.selectionnee();
 
-    return tab;
-  }
+				this.cookiesSelectionnees = [];
+				this.cookiesSelectionnees.push(cookieDragguee);
+			}
+
+			img.ondragover = (event) => {
+				return false;
+			}
+
+			img.ondragenter = (event) => {
+				const i = event.target;
+				i.classList.add("imgDragOver");
+			}
+
+			img.ondragleave = (event) => {
+				const i = event.target;
+				i.classList.remove("imgDragOver");
+			}
+
+			img.ondrop = (event) => {
+				let cookieDragguee = this.getCookieFromImage(event.target);
+				cookieDragguee.selectionnee();
+
+				this.cookiesSelectionnees.push(cookieDragguee);
+
+				Cookie.swapCookies(this.cookiesSelectionnees[0], this.cookiesSelectionnees[1]);
+
+				this.cookiesSelectionnees = [];
+				cookieDragguee.htmlImage.classList.remove("imgDragOver");
+			}
+
+			div.appendChild(img);
+		});
+	}
+
+	getCookieFromImage(img) {
+
+		const ligne = img.dataset.ligne;
+		const colonne = img.dataset.colonne;
+
+		return this.tabcookies[ligne][colonne];
+	};
+
+	remplirTableauDeCookies(nbDeCookiesDifferents) {
+
+		const tab = create2DArray(this.l, this.c);
+
+		for (let l = 0; l < this.l; l++) {
+			for (let c = 0; c < this.c; c++) {
+
+				let type = Math.floor(Math.random() * nbDeCookiesDifferents);
+
+				while (this.hasAlignment(tab, l, c, type)) {
+					type = Math.floor(Math.random() * nbDeCookiesDifferents);
+				}
+
+				tab[l][c] = new Cookie(type, l, c);
+			}
+		}
+
+		return tab;
+	}
+
+	hasAlignment(tab, ligne, colonne, type) {
+
+		const horizontal = colonne >= 2 && tab[ligne][colonne - 1]?.type === type && tab[ligne][colonne - 2]?.type === type;
+		const vertical = ligne >= 2 && tab[ligne - 1][colonne]?.type === type && tab[ligne - 2][colonne]?.type === type;
+
+		return (horizontal || vertical);
+	};
 }

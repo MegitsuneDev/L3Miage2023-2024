@@ -51,10 +51,8 @@ export default class Grille {
           cookieClickee.selectionnee();
           console.log("On essaie de swapper !")
           this.cookiesSelectionnees.push(cookieClickee);
-          // on essaie de swapper
           Cookie.swapCookies(this.cookiesSelectionnees[0],
             this.cookiesSelectionnees[1]);
-          // on remet le tableau des cookies selectionnées à 0
           this.cookiesSelectionnees = [];
         } else {
           console.log("Deux cookies sont déjà sélectionnées...")
