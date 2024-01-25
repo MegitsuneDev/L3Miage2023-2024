@@ -37,17 +37,17 @@ export default class Cookie {
 		img.dataset.colonne = colonne;
 
 		this.htmlImage = img;
-	}
+	};
 
 	selectionnee() {
 		this.htmlImage.src = Cookie.urlsImagesSurlignees[this.type];
 		this.htmlImage.classList.add("cookie-selected");
-	}
+	};
 
 	deselectionnee() {
 		this.htmlImage.src = Cookie.urlsImagesNormales[this.type];
 		this.htmlImage.classList.remove("cookie-selected");
-	}
+	};
 
 	static swapCookies(c1, c2) {
 
