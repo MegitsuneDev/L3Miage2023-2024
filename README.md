@@ -24,3 +24,12 @@ Que serait *Candy Crush* sans une logique de swap ! Alors lors de la conception 
 
 La logique de swap peut être effectuée avec des clics mais aussi en drag and drop. On a besoin de sélectionner avec notre souris notre *cookie* et de le déplacer sur un autre *cookie* pour le swap. De ce fait, pour réaliser ce drag and drop, on utilise l'event "**ondragstart**" qui permet de commencer le drag et donc de sélectionner notre *cookie*. Ensuite "**ondragover**" nous indique qu'on est au-dessus d'une zone de dépôt valide. Puis "**ondragenter**" nous indique qu'un élément est glissé dans une zone de dépôt valide. Après "**ondragleave**" nous indique qu'un élément glissé sort d'une zone de dépôt valide. Et pour terminer "**ondrop**" nous indique qu'un élément est déposé dans une zone de dépôt valide.
 
+### Insertion de la logique de destruction d'alignement
+
+Dans *Candy Crush*, nous avons la destruction d'alignement et malheureusement, je n'ai pas réussi à implémenter cette fonctionnalité.
+
+Nous pouvons retrouver dans mon code deux fonctions qui sont "detectAlignments" et "destroyCookies". La fonction "detectAlignments" a pour but de détecter les alignements et de renvoyer un tableau de cookies avec leurs positions. La fonction "destroyCookies" a pour but de détruire les cookies détectés précédemment mais malheureusement, elle ne fonctionne pas correctement. J'ai essayé un grand nombre de possibilités mais je n'ai absolument pas réussi.
+
+### Publication de Candy Crush sur Github Pages
+
+Je savais qu'on pouvait faire en sorte qu'un site web soit accessible par URL grâce à Github. De ce fait, voici le lien : [https://megitsunedev.github.io/L3Miage2023-2024/](https://megitsunedev.github.io/L3Miage2023-2024/)
